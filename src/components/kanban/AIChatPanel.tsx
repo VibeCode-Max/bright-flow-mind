@@ -102,16 +102,16 @@ Done (${done.length}): ${done.map((t) => `"${t.title}" [${t.priority}]`).join(",
   if (!open) return null;
 
   return (
-    <div className="w-[380px] border-l border-border bg-card flex flex-col h-full shrink-0">
+    <div className="w-[380px] border-l border-border bg-card/95 backdrop-blur-sm flex flex-col h-full shrink-0">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center">
             <Sparkles className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm">AI Assistant</h3>
-            <p className="text-xs text-muted-foreground">Task-focused helper</p>
+            <h3 className="font-semibold text-sm text-foreground">eilev</h3>
+            <p className="text-xs text-muted-foreground">Task-focused AI</p>
           </div>
         </div>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
@@ -123,8 +123,10 @@ Done (${done.length}): ${done.map((t) => `"${t.title}" [${t.priority}]`).join(",
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center py-12 space-y-3">
-            <Bot className="h-10 w-10 mx-auto text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">Ask me to suggest tasks, break down work, or prioritize your board.</p>
+            <div className="h-12 w-12 rounded-2xl bg-primary/10 mx-auto flex items-center justify-center">
+              <Bot className="h-6 w-6 text-primary/50" />
+            </div>
+            <p className="text-sm text-muted-foreground">Ask eilev to suggest tasks, break down work, or prioritize your board.</p>
           </div>
         )}
         {messages.map((m, i) => (
@@ -132,12 +134,12 @@ Done (${done.length}): ${done.map((t) => `"${t.title}" [${t.priority}]`).join(",
             <div
               className={`max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm ${
                 m.role === "user"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                  : "bg-muted/80 text-foreground"
               }`}
             >
               {m.role === "assistant" ? (
-                <div className="prose prose-sm max-w-none dark:prose-invert [&_p]:m-0 [&_ul]:my-1 [&_li]:my-0">
+                <div className="prose prose-sm prose-invert max-w-none [&_p]:m-0 [&_ul]:my-1 [&_li]:my-0">
                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
               ) : (
@@ -148,11 +150,11 @@ Done (${done.length}): ${done.map((t) => `"${t.title}" [${t.priority}]`).join(",
         ))}
         {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
           <div className="flex justify-start">
-            <div className="bg-muted rounded-xl px-4 py-3">
+            <div className="bg-muted/80 rounded-xl px-4 py-3">
               <div className="flex gap-1">
-                <span className="h-2 w-2 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:0ms]" />
-                <span className="h-2 w-2 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:150ms]" />
-                <span className="h-2 w-2 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:300ms]" />
+                <span className="h-2 w-2 rounded-full bg-primary/40 animate-bounce [animation-delay:0ms]" />
+                <span className="h-2 w-2 rounded-full bg-primary/40 animate-bounce [animation-delay:150ms]" />
+                <span className="h-2 w-2 rounded-full bg-primary/40 animate-bounce [animation-delay:300ms]" />
               </div>
             </div>
           </div>
@@ -171,7 +173,7 @@ Done (${done.length}): ${done.map((t) => `"${t.title}" [${t.priority}]`).join(",
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about your tasks..."
+            placeholder="Ask eilev about your tasks..."
             className="flex-1"
             disabled={isLoading}
           />

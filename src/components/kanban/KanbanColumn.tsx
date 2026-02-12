@@ -21,13 +21,24 @@ export default function KanbanColumn({ column, tasks, onAddTask, onEditTask, onD
       {/* Column header */}
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: column.color }} />
+          <span
+            className="h-2.5 w-2.5 rounded-full shadow-sm"
+            style={{
+              backgroundColor: column.color,
+              boxShadow: `0 0 8px ${column.color}40`,
+            }}
+          />
           <h3 className="font-semibold text-sm text-foreground">{column.title}</h3>
           <span className="bg-muted text-muted-foreground text-xs font-medium rounded-full px-2 py-0.5">
             {tasks.length}
           </span>
         </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onAddTask(column.id)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
+          onClick={() => onAddTask(column.id)}
+        >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -35,8 +46,10 @@ export default function KanbanColumn({ column, tasks, onAddTask, onEditTask, onD
       {/* Droppable area */}
       <div
         ref={setNodeRef}
-        className={`flex-1 space-y-3 rounded-xl p-2 transition-colors min-h-[200px] ${
-          isOver ? "bg-primary/5 ring-2 ring-primary/20" : "bg-transparent"
+        className={`flex-1 space-y-3 rounded-xl p-2 transition-all duration-300 min-h-[200px] ${
+          isOver
+            ? "bg-primary/10 ring-2 ring-primary/30 shadow-inner shadow-primary/5 scale-[1.01]"
+            : "bg-muted/30"
         }`}
       >
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
@@ -44,6 +57,13 @@ export default function KanbanColumn({ column, tasks, onAddTask, onEditTask, onD
             <TaskCard key={task.id} task={task} onEdit={onEditTask} onDelete={onDeleteTask} />
           ))}
         </SortableContext>
+
+        {/* Empty state */}
+        {tasks.length === 0 && !isOver && (
+          <div className="flex items-center justify-center h-24 rounded-lg border border-dashed border-border/50 text-xs text-muted-foreground/50">
+            Drop tasks here
+          </div>
+        )}
       </div>
     </div>
   );
