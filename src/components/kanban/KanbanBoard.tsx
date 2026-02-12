@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -8,9 +8,7 @@ import {
   closestCorners,
   type DragStartEvent,
   type DragEndEvent,
-  type DragOverEvent,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import KanbanColumn from "./KanbanColumn";
@@ -19,6 +17,7 @@ import TaskDialog from "./TaskDialog";
 import AIChatPanel from "./AIChatPanel";
 import { useTasks } from "@/hooks/useTasks";
 import { COLUMNS, type ColumnId, type Task } from "@/types/task";
+import { fireCelebration } from "@/lib/celebration";
 
 export default function KanbanBoard() {
   const { tasks, isLoading, addTask, updateTask, deleteTask, moveTask } = useTasks();
@@ -62,6 +61,7 @@ export default function KanbanBoard() {
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    const draggedTask = activeTask;
     setActiveTask(null);
     const { active, over } = event;
     if (!over) return;
@@ -69,7 +69,6 @@ export default function KanbanBoard() {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // Determine target column
     const overColumn = COLUMNS.find((c) => c.id === overId);
     const overTask = tasks.find((t) => t.id === overId);
     const targetColumnId = overColumn ? overColumn.id : overTask?.column_id;
@@ -78,6 +77,9 @@ export default function KanbanBoard() {
 
     const activeTaskData = tasks.find((t) => t.id === activeId);
     if (!activeTaskData) return;
+
+    // Check if column actually changed
+    const columnChanged = activeTaskData.column_id !== targetColumnId;
 
     const colTasks = tasksByColumn(targetColumnId as ColumnId);
     let newPosition = colTasks.length;
@@ -88,13 +90,18 @@ export default function KanbanBoard() {
     }
 
     moveTask.mutate({ id: activeId, column_id: targetColumnId as ColumnId, position: newPosition });
+
+    // 🎉 Celebrate when a task moves to a different column!
+    if (columnChanged) {
+      fireCelebration();
+    }
   };
 
   return (
     <div className="flex h-screen bg-background">
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="px-8 py-6 border-b border-border bg-card">
+        <header className="px-8 py-6 border-b border-border bg-card/80 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-foreground tracking-tight">Tasks</h1>
@@ -107,7 +114,7 @@ export default function KanbanBoard() {
               className="gap-2"
             >
               <Sparkles className="h-4 w-4" />
-              AI Assistant
+              eilev
             </Button>
           </div>
 
@@ -116,9 +123,9 @@ export default function KanbanBoard() {
             {["Overview", "Board", "List", "Table", "Timeline"].map((tab) => (
               <button
                 key={tab}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   tab === "Board"
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
@@ -154,7 +161,7 @@ export default function KanbanBoard() {
 
               <DragOverlay>
                 {activeTask && (
-                  <div className="rotate-3 opacity-90">
+                  <div className="rotate-2 scale-105 shadow-2xl shadow-primary/20">
                     <TaskCard task={activeTask} onEdit={() => {}} onDelete={() => {}} />
                   </div>
                 )}

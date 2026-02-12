@@ -20,9 +20,9 @@ interface TaskCardProps {
 }
 
 const priorityStyles: Record<string, string> = {
-  low: "bg-[hsl(var(--priority-low)/0.12)] text-[hsl(var(--priority-low))]",
-  medium: "bg-[hsl(var(--priority-medium)/0.12)] text-[hsl(var(--priority-medium))]",
-  high: "bg-[hsl(var(--priority-high)/0.12)] text-[hsl(var(--priority-high))]",
+  low: "bg-[hsl(var(--priority-low)/0.15)] text-[hsl(var(--priority-low))]",
+  medium: "bg-[hsl(var(--priority-medium)/0.15)] text-[hsl(var(--priority-medium))]",
+  high: "bg-[hsl(var(--priority-high)/0.15)] text-[hsl(var(--priority-high))]",
 };
 
 export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
@@ -34,7 +34,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   return (
@@ -43,20 +43,27 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-card rounded-xl border border-border/60 p-4 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing space-y-3"
+      className={`bg-card rounded-xl border border-border/60 p-4 shadow-sm transition-all duration-200 cursor-grab active:cursor-grabbing space-y-3 ${
+        isDragging
+          ? "shadow-xl shadow-primary/20 scale-105 ring-2 ring-primary/30"
+          : "hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 hover:-translate-y-0.5"
+      }`}
     >
       {/* Status + Menu */}
       <div className="flex items-center justify-between">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <span
             className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: STATUS_COLORS[task.status] }}
+            style={{
+              backgroundColor: STATUS_COLORS[task.status],
+              boxShadow: `0 0 6px ${STATUS_COLORS[task.status]}60`,
+            }}
           />
           {STATUS_LABELS[task.status]}
         </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:bg-muted" onClick={(e) => e.stopPropagation()}>
               <MoreHorizontal className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
